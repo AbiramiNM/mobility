@@ -31,7 +31,8 @@ export default function Planner() {
   const [persons, setPersons] = useState<number>(2);
   const [destination, setDestination] = useState<string>("");
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [budget, setBudget] = useState<number>(1000);
+  const [days, setDays] = useState<number>(3);
+  const [budget, setBudget] = useState<number>(50000);
   const [interests, setInterests] = useState<Interest[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -44,13 +45,14 @@ export default function Planner() {
 
   function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
-    if (!destination || !startDate || persons <= 0 || budget <= 0) return;
+    if (!destination || !startDate || persons <= 0 || budget <= 0 || days <= 0) return;
     setSubmitting(true);
     setTimeout(() => {
       const itins = mockGenerateItineraries({
         persons,
         destination,
         startDate: startDate.toISOString().slice(0, 10),
+        days,
         budget,
         interests,
       });
@@ -97,7 +99,7 @@ export default function Planner() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
                       <Label>Start date</Label>
                       <Calendar
@@ -108,11 +110,23 @@ export default function Planner() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="budget">Budget (total)</Label>
+                      <Label htmlFor="days">Number of days</Label>
+                      <Input
+                        id="days"
+                        type="number"
+                        min={1}
+                        max={14}
+                        value={days}
+                        onChange={(e) => setDays(parseInt(e.target.value || "0", 10))}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="budget">Budget (₹)</Label>
                       <Input
                         id="budget"
                         type="number"
-                        min={1}
+                        min={1000}
                         value={budget}
                         onChange={(e) => setBudget(parseInt(e.target.value || "0", 10))}
                         required

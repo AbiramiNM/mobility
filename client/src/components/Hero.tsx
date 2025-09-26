@@ -8,7 +8,14 @@ interface HeroProps {
 
 export default function Hero({ user }: HeroProps) {
   return (
-    <section className="relative bg-gradient-to-br from-background via-background to-muted/20 py-20 px-4">
+    <section className="relative bg-gradient-to-br from-background via-background to-muted/20 py-20 px-4 overflow-hidden">
+      {/* Background Animation */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-primary/20 rounded-full animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-primary/30 rounded-full animate-bounce delay-300"></div>
+        <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-primary/15 rounded-full animate-pulse delay-700"></div>
+        <div className="absolute bottom-40 right-1/4 w-20 h-20 bg-primary/25 rounded-full animate-bounce delay-1000"></div>
+      </div>
       <div className="container mx-auto max-w-6xl text-center">
         {/* Main Hero Content */}
         <div className="mb-16">

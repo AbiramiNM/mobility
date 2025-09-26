@@ -10,6 +10,8 @@ import SignUp from "@/pages/SignUp";
 import NotFound from "@/pages/not-found";
 import Planner from "@/pages/Planner";
 import Itineraries from "@/pages/Itineraries";
+import Payment from "@/pages/Payment";
+import MyTrips from "@/pages/MyTrips";
 
 function Router() {
   return (
@@ -19,6 +21,8 @@ function Router() {
       <Route path="/signup" component={SignUp} />
       <Route path="/planner" component={Planner} />
       <Route path="/itineraries" component={Itineraries} />
+      <Route path="/payment" component={Payment} />
+      <Route path="/my-trips" component={MyTrips} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>

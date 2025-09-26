@@ -36,19 +36,19 @@ export default function Itineraries() {
 
   function handleSelect(id: string) {
     setSelectedItinerary(id);
-    alert("Itinerary selected!");
+    navigate("/payment");
   }
 
   function updateActivity(itinId: string, dayIdx: number, actIdx: number, patch: Partial<ActivityItem>) {
     setItins((prev) =>
       prev.map((it) => {
         if (it.id !== itinId) return it;
-        const days = it.days.map((d, di) => {
+        const dayPlans = it.dayPlans.map((d, di) => {
           if (di !== dayIdx) return d;
           const activities = d.activities.map((a, ai) => (ai === actIdx ? { ...a, ...patch } : a));
           return { ...d, activities };
         });
-        return verifyBudget({ ...it, days });
+        return verifyBudget({ ...it, dayPlans });
       })
     );
   }
@@ -80,14 +80,14 @@ export default function Itineraries() {
                         </span>
                       </CardTitle>
                       <CardDescription>
-                        {it.destination} • {it.persons} {it.persons === 1 ? "person" : "people"} • Start {it.startDate} • Budget ${it.budget}
+                        {it.destination} • {it.persons} {it.persons === 1 ? "person" : "people"} • {it.days} days • Start {it.startDate} • Budget ₹{it.budget.toLocaleString()}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="text-sm text-muted-foreground">Estimated total: ${it.totalCost}</div>
+                      <div className="text-sm text-muted-foreground">Estimated total: ₹{it.totalCost.toLocaleString()}</div>
                       <ScrollArea className="h-80 pr-3">
                         <div className="space-y-4">
-                          {it.days.map((d, di) => (
+                          {it.dayPlans.map((d, di) => (
                             <div key={di} className="border rounded-md p-3">
                               <div className="font-medium mb-2">Day {d.day}</div>
                               <div className="space-y-3">
@@ -116,7 +116,7 @@ export default function Itineraries() {
                                       <>
                                         <div className="col-span-2 font-medium">{a.title}</div>
                                         <div className="col-span-2 text-sm text-muted-foreground">{a.description}</div>
-                                        <div className="col-span-1 text-right">${a.cost}</div>
+                                        <div className="col-span-1 text-right">₹{a.cost.toLocaleString()}</div>
                                       </>
                                     )}
                                   </div>

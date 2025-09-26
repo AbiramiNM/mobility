@@ -25,25 +25,16 @@ export default function Header({ user, onThemeToggle, isDark }: HeaderProps) {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 hover-elevate rounded-md px-2 py-1" data-testid="link-home">
           <Plane className="h-6 w-6 text-primary" />
-          <span className="text-xl font-semibold text-foreground">WanderWise</span>
+          <span className="text-xl font-semibold text-foreground">VoyageVibe</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          {!isAuthPage && (
-            <>
-              <Link href="/explore" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" data-testid="link-explore">
-                Explore
-              </Link>
-              <Link href="/my-trips" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" data-testid="link-trips">
-                My Trips
-              </Link>
-              <Link href="/planner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" data-testid="link-planner">
-                AI Planner
-              </Link>
-            </>
-          )}
-        </nav>
+        {/* Desktop Navigation - Centered App Name */}
+        <div className="hidden md:flex items-center justify-center flex-1">
+          <div className="flex items-center gap-2">
+            <Plane className="h-6 w-6 text-primary" />
+            <span className="text-2xl font-bold text-foreground">VoyageVibe</span>
+          </div>
+        </div>
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-3">
@@ -55,6 +46,14 @@ export default function Header({ user, onThemeToggle, isDark }: HeaderProps) {
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
+          
+          {!isAuthPage && (
+            <Link href="/my-trips">
+              <Button variant="outline" size="sm" data-testid="link-trips">
+                My Trips
+              </Button>
+            </Link>
+          )}
           
           {user ? (
             <div className="flex items-center gap-3">
@@ -104,14 +103,8 @@ export default function Header({ user, onThemeToggle, isDark }: HeaderProps) {
           <nav className="container px-4 py-4 space-y-4">
             {!isAuthPage && (
               <>
-                <Link href="/explore" className="block text-sm font-medium text-muted-foreground hover:text-foreground">
-                  Explore
-                </Link>
                 <Link href="/my-trips" className="block text-sm font-medium text-muted-foreground hover:text-foreground">
                   My Trips
-                </Link>
-                <Link href="/planner" className="block text-sm font-medium text-muted-foreground hover:text-foreground">
-                  AI Planner
                 </Link>
                 <div className="border-t pt-4"></div>
               </>

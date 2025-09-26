@@ -22,7 +22,8 @@ export interface ItineraryInput {
   persons: number;
   destination: string;
   startDate: string; // ISO date
-  budget: number; // total budget cap
+  days: number; // number of days
+  budget: number; // total budget cap in rupees
   interests: Interest[];
 }
 
@@ -32,10 +33,12 @@ export interface Itinerary {
   destination: string;
   persons: number;
   startDate: string;
-  budget: number;
-  totalCost: number;
-  days: DayPlan[];
+  days: number;
+  budget: number; // in rupees
+  totalCost: number; // in rupees
+  dayPlans: DayPlan[];
   isValidBudget: boolean;
+  isPaid: boolean;
 }
 
 const STORAGE_KEY = "ww_itineraries";
@@ -64,7 +67,7 @@ export function getSelectedItineraryId(): string | null {
 }
 
 export function computeTotalCost(itin: Itinerary): number {
-  return itin.days.reduce((sum, d) => {
+  return itin.dayPlans.reduce((sum, d) => {
     return sum + d.activities.reduce((a, act) => a + Math.max(0, act.cost || 0), 0);
   }, 0);
 }
@@ -130,8 +133,8 @@ export function mockGenerateItineraries(input: ItineraryInput): Itinerary[] {
 
   const itineraries: Itinerary[] = [];
   for (let i = 0; i < numItins; i++) {
-    const daysCount = Math.min(5, Math.max(3, Math.floor(Math.random() * 5) + 3));
-    const days: DayPlan[] = [];
+    const daysCount = input.days;
+    const dayPlans: DayPlan[] = [];
 
     // Target total strictly below budget with safety margin (70% - 95%)
     const targetTotal = input.budget * (0.7 + Math.random() * 0.25);
@@ -142,9 +145,9 @@ export function mockGenerateItineraries(input: ItineraryInput): Itinerary[] {
       const activities: ActivityItem[] = [];
       for (let a = 0; a < numActs; a++) {
         const pick = activitiesCatalog[(d * 3 + a + i) % activitiesCatalog.length];
-        const maxForThis = Math.max(15, remaining / ((daysCount - d + 1) * (numActs - a || 1)));
-        const base = Math.max(10, Math.min(maxForThis, targetTotal / (daysCount * numActs)));
-        const cost = Math.max(5, Math.round(base * (0.6 + Math.random() * 0.8)));
+        const maxForThis = Math.max(150, remaining / ((daysCount - d + 1) * (numActs - a || 1)));
+        const base = Math.max(100, Math.min(maxForThis, targetTotal / (daysCount * numActs)));
+        const cost = Math.max(50, Math.round(base * (0.6 + Math.random() * 0.8)));
         remaining = Math.max(0, remaining - cost);
         activities.push({
           id: randomId("act"),
@@ -153,7 +156,7 @@ export function mockGenerateItineraries(input: ItineraryInput): Itinerary[] {
           cost,
         });
       }
-      days.push({ day: d, activities });
+      dayPlans.push({ day: d, activities });
     }
 
     const itin: Itinerary = verifyBudget({
@@ -162,23 +165,25 @@ export function mockGenerateItineraries(input: ItineraryInput): Itinerary[] {
       destination: input.destination,
       persons: input.persons,
       startDate: input.startDate,
+      days: input.days,
       budget: input.budget,
       totalCost: 0,
-      days,
+      dayPlans,
       isValidBudget: false,
+      isPaid: false,
     });
 
     // If the generator accidentally went above budget, reduce costs proportionally
     if (!itin.isValidBudget && itin.totalCost > 0) {
       const scale = (input.budget * 0.95) / itin.totalCost; // ensure strictly below
-      const scaledDays = itin.days.map((d) => ({
+      const scaledDayPlans = itin.dayPlans.map((d) => ({
         ...d,
         activities: d.activities.map((a) => ({
           ...a,
-          cost: Math.max(1, Math.floor(a.cost * Math.min(0.99, scale))),
+          cost: Math.max(10, Math.floor(a.cost * Math.min(0.99, scale))),
         })),
       }));
-      itineraries.push(verifyBudget({ ...itin, days: scaledDays }));
+      itineraries.push(verifyBudget({ ...itin, dayPlans: scaledDayPlans }));
     } else {
       itineraries.push(itin);
     }
