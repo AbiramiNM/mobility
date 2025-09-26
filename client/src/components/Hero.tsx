@@ -8,13 +8,25 @@ interface HeroProps {
 
 export default function Hero({ user }: HeroProps) {
   return (
-    <section className="relative bg-gradient-to-br from-background via-background to-muted/20 py-20 px-4 overflow-hidden">
-      {/* Background Animation */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-primary/20 rounded-full animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-primary/30 rounded-full animate-bounce delay-300"></div>
-        <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-primary/15 rounded-full animate-pulse delay-700"></div>
-        <div className="absolute bottom-40 right-1/4 w-20 h-20 bg-primary/25 rounded-full animate-bounce delay-1000"></div>
+    <section className="relative py-20 px-4 overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+          style={{
+            backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23667eea;stop-opacity:0.3" /><stop offset="50%" style="stop-color:%23764ba2;stop-opacity:0.2" /><stop offset="100%" style="stop-color:%23f093fb;stop-opacity:0.3" /></linearGradient></defs><rect width="1200" height="800" fill="url(%23grad1)"/><circle cx="200" cy="150" r="80" fill="%23667eea" opacity="0.1"/><circle cx="1000" cy="200" r="120" fill="%23764ba2" opacity="0.1"/><circle cx="300" cy="600" r="100" fill="%23f093fb" opacity="0.1"/><circle cx="900" cy="650" r="90" fill="%23667eea" opacity="0.1"/><path d="M0,400 Q300,200 600,400 T1200,400" stroke="%23667eea" stroke-width="2" fill="none" opacity="0.1"/><path d="M0,600 Q400,400 800,600 T1200,600" stroke="%23764ba2" stroke-width="2" fill="none" opacity="0.1"/></svg>')`
+          }}
+        ></div>
+      </div>
+      
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-pulse blur-sm"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full animate-bounce delay-300 blur-sm"></div>
+        <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-gradient-to-r from-pink-400 to-blue-500 rounded-full animate-pulse delay-700 blur-sm"></div>
+        <div className="absolute bottom-40 right-1/4 w-20 h-20 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-bounce delay-1000 blur-sm"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full animate-pulse delay-500 blur-sm"></div>
+        <div className="absolute top-1/3 right-1/3 w-28 h-28 bg-gradient-to-r from-pink-400 to-blue-500 rounded-full animate-bounce delay-1200 blur-sm"></div>
       </div>
       <div className="container mx-auto max-w-6xl text-center">
         {/* Main Hero Content */}

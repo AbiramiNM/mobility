@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
 
 export default function Itineraries() {
   const { theme, toggleTheme } = useTheme();
+  const [_, navigate] = useLocation();
   const [user] = useState<{ username: string } | null>(() => {
     const mockUser = localStorage.getItem("mockUser");
     return mockUser ? JSON.parse(mockUser) : null;
