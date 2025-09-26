@@ -39,6 +39,17 @@ export interface Itinerary {
   dayPlans: DayPlan[];
   isValidBudget: boolean;
   isPaid: boolean;
+  images?: string[]; // destination images
+  weather?: {
+    temperature: number;
+    description: string;
+    icon: string;
+  };
+  bestSeason?: {
+    season: string;
+    icon: string;
+    reason: string;
+  };
 }
 
 const STORAGE_KEY = "ww_itineraries";
@@ -127,9 +138,12 @@ function pickSampleActivities(interests: Interest[]): { title: string; descripti
   return shuffled.slice(0, 12);
 }
 
-export function mockGenerateItineraries(input: ItineraryInput): Itinerary[] {
+export async function mockGenerateItineraries(input: ItineraryInput): Promise<Itinerary[]> {
   const numItins = Math.floor(Math.random() * 2) + 3; // 3 or 4
   const activitiesCatalog = pickSampleActivities(input.interests);
+
+  // Import travel API functions
+  const { fetchDestinationImages, fetchWeatherData, getBestSeasonToVisit } = await import('./travelApi');
 
   const itineraries: Itinerary[] = [];
   for (let i = 0; i < numItins; i++) {
@@ -159,6 +173,14 @@ export function mockGenerateItineraries(input: ItineraryInput): Itinerary[] {
       dayPlans.push({ day: d, activities });
     }
 
+    // Fetch images and weather data
+    const [images, weatherData] = await Promise.all([
+      fetchDestinationImages(input.destination, 3),
+      fetchWeatherData(input.destination)
+    ]);
+
+    const bestSeason = getBestSeasonToVisit(input.destination);
+
     const itin: Itinerary = verifyBudget({
       id: randomId("itin"),
       title: `${input.destination} Escape #${i + 1}`,
@@ -171,6 +193,13 @@ export function mockGenerateItineraries(input: ItineraryInput): Itinerary[] {
       dayPlans,
       isValidBudget: false,
       isPaid: false,
+      images: images.map(img => img.urls.regular),
+      weather: {
+        temperature: weatherData.main.temp,
+        description: weatherData.weather[0].description,
+        icon: weatherData.weather[0].icon
+      },
+      bestSeason
     });
 
     // If the generator accidentally went above budget, reduce costs proportionally

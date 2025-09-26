@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
+import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTheme } from "@/components/ThemeProvider";
+import { Cloud, Sun, Thermometer } from "lucide-react";
 import {
   getStoredItineraries,
   storeItineraries,
@@ -70,21 +72,70 @@ export default function Itineraries() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {itins.map((it) => {
+              {itins.map((it, index) => {
                 const isEditing = editingId === it.id;
                 return (
-                  <Card key={it.id} className="flex flex-col">
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <span>{it.title}</span>
-                        <span className={it.isValidBudget ? "text-green-600" : "text-red-600"}>
-                          {it.isValidBudget ? "✅ Plan is good to go!" : "⚠️ Budget exceeded, please adjust."}
-                        </span>
-                      </CardTitle>
-                      <CardDescription>
-                        {it.destination} • {it.persons} {it.persons === 1 ? "person" : "people"} • {it.days} days • Start {it.startDate} • Budget ₹{it.budget.toLocaleString()}
-                      </CardDescription>
-                    </CardHeader>
+                  <motion.div
+                    key={it.id}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    className="h-full"
+                  >
+                    <Card className="flex flex-col h-full overflow-hidden">
+                      {/* Destination Image */}
+                      {it.images && it.images.length > 0 && (
+                        <div className="relative h-48 overflow-hidden">
+                          <motion.img
+                            src={it.images[0]}
+                            alt={it.destination}
+                            className="w-full h-full object-cover"
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                          <div className="absolute bottom-4 left-4 text-white">
+                            <h3 className="text-xl font-bold">{it.destination}</h3>
+                            {it.weather && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <Thermometer className="w-4 h-4" />
+                                <span>{Math.round(it.weather.temperature)}°C</span>
+                                <span>•</span>
+                                <span className="capitalize">{it.weather.description}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <span>{it.title}</span>
+                          <span className={it.isValidBudget ? "text-green-600" : "text-red-600"}>
+                            {it.isValidBudget ? "✅ Plan is good to go!" : "⚠️ Budget exceeded, please adjust."}
+                          </span>
+                        </CardTitle>
+                        <CardDescription>
+                          {it.persons} {it.persons === 1 ? "person" : "people"} • {it.days} days • Start {it.startDate} • Budget ₹{it.budget.toLocaleString()}
+                        </CardDescription>
+                        
+                        {/* Weather and Season Info */}
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          {it.weather && (
+                            <div className="flex items-center gap-1">
+                              <Cloud className="w-4 h-4" />
+                              <span>{Math.round(it.weather.temperature)}°C</span>
+                            </div>
+                          )}
+                          {it.bestSeason && (
+                            <div className="flex items-center gap-1">
+                              <span>{it.bestSeason.icon}</span>
+                              <span>Best: {it.bestSeason.season}</span>
+                            </div>
+                          )}
+                        </div>
+                      </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="text-sm text-muted-foreground">Estimated total: ₹{it.totalCost.toLocaleString()}</div>
                       <ScrollArea className="h-80 pr-3">
@@ -130,13 +181,18 @@ export default function Itineraries() {
                       </ScrollArea>
 
                       <div className="flex gap-2 justify-end">
-                        <Button variant="ghost" onClick={() => setEditingId(isEditing ? null : it.id)}>
-                          {isEditing ? "Done" : "Edit"}
-                        </Button>
-                        <Button onClick={() => handleSelect(it.id)}>Select</Button>
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Button variant="ghost" onClick={() => setEditingId(isEditing ? null : it.id)}>
+                            {isEditing ? "Done" : "Edit"}
+                          </Button>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Button onClick={() => handleSelect(it.id)}>Select</Button>
+                        </motion.div>
                       </div>
                     </CardContent>
-                  </Card>
+                    </Card>
+                  </motion.div>
                 );
               })}
             </div>

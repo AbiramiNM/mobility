@@ -43,12 +43,12 @@ export default function Planner() {
     });
   }
 
-  function handleGenerate(e: React.FormEvent) {
+  async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
     if (!destination || !startDate || persons <= 0 || budget <= 0 || days <= 0) return;
     setSubmitting(true);
-    setTimeout(() => {
-      const itins = mockGenerateItineraries({
+    try {
+      const itins = await mockGenerateItineraries({
         persons,
         destination,
         startDate: startDate.toISOString().slice(0, 10),
@@ -57,9 +57,12 @@ export default function Planner() {
         interests,
       });
       storeItineraries(itins);
-      setSubmitting(false);
       navigate("/itineraries");
-    }, 400);
+    } catch (error) {
+      console.error('Error generating itineraries:', error);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (

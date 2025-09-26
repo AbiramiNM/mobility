@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/components/ThemeProvider";
+import { Thermometer, Cloud } from "lucide-react";
 import {
   getStoredItineraries,
   storeItineraries,
@@ -79,19 +81,59 @@ export default function Payment() {
           <div className="container mx-auto max-w-4xl">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Order Summary */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
-                  <CardDescription>Review your selected itinerary</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold text-lg">{selectedItinerary.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedItinerary.destination} • {selectedItinerary.persons}{" "}
-                      {selectedItinerary.persons === 1 ? "person" : "people"} • {selectedItinerary.days} days
-                    </p>
-                  </div>
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Order Summary</CardTitle>
+                    <CardDescription>Review your selected itinerary</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Destination Image */}
+                    {selectedItinerary.images && selectedItinerary.images.length > 0 && (
+                      <div className="relative h-32 overflow-hidden rounded-lg">
+                        <motion.img
+                          src={selectedItinerary.images[0]}
+                          alt={selectedItinerary.destination}
+                          className="w-full h-full object-cover"
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                        <div className="absolute bottom-2 left-2 text-white">
+                          <h3 className="font-bold text-lg">{selectedItinerary.destination}</h3>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div>
+                      <h3 className="font-semibold text-lg">{selectedItinerary.title}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedItinerary.persons}{" "}
+                        {selectedItinerary.persons === 1 ? "person" : "people"} • {selectedItinerary.days} days
+                      </p>
+                      
+                      {/* Weather Info */}
+                      {selectedItinerary.weather && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                          <Thermometer className="w-4 h-4" />
+                          <span>{Math.round(selectedItinerary.weather.temperature)}°C</span>
+                          <span>•</span>
+                          <span className="capitalize">{selectedItinerary.weather.description}</span>
+                        </div>
+                      )}
+                      
+                      {/* Best Season */}
+                      {selectedItinerary.bestSeason && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>{selectedItinerary.bestSeason.icon}</span>
+                          <span>Best season: {selectedItinerary.bestSeason.season}</span>
+                        </div>
+                      )}
+                    </div>
                   
                   <div className="border-t pt-4">
                     <div className="flex justify-between items-center">
@@ -125,7 +167,12 @@ export default function Payment() {
               </Card>
 
               {/* Payment Form */}
-              <Card>
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Card>
                 <CardHeader>
                   <CardTitle>Payment Details</CardTitle>
                   <CardDescription>Enter your payment information</CardDescription>
@@ -181,22 +228,27 @@ export default function Payment() {
                     </div>
 
                     <div className="pt-4 space-y-3">
-                      <Button type="submit" className="w-full" disabled={processing}>
-                        {processing ? "Processing Payment..." : `Pay ₹${selectedItinerary.totalCost.toLocaleString()}`}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => navigate("/itineraries")}
-                        disabled={processing}
-                      >
-                        Back to Itineraries
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button type="submit" className="w-full" disabled={processing}>
+                          {processing ? "Processing Payment..." : `Pay ₹${selectedItinerary.totalCost.toLocaleString()}`}
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => navigate("/itineraries")}
+                          disabled={processing}
+                        >
+                          Back to Itineraries
+                        </Button>
+                      </motion.div>
                     </div>
                   </form>
                 </CardContent>
-              </Card>
+                </Card>
+              </motion.div>
             </div>
           </div>
         </section>
