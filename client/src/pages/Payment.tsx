@@ -165,6 +165,7 @@ export default function Payment() {
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
 
               {/* Payment Form */}
               <motion.div
